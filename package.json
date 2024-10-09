@@ -1,0 +1,12 @@
+{
+  "name": "flight-price-prediction-project",
+  "version": "1.0.0",
+  "description": "In today's globalized world, air travel has become essential for millions of people. However, flight prices fluctuate unpredictably, making it hard for travelers to find the best deals. Several factors, such as demand changes, seasonal trends, and airline policies, further complicate the process. Many travelers face overhead costs as they try to determine the best time to book flights and choose the right airline.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
