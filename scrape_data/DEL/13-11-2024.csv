@@ -1,0 +1,24 @@
+Origin,Destination,Company,Departure Time,Arrival Time,Duration Time,Flight Price,Date,Cabin Class
+BOM,DEL,SpiceJet,06:05,08:30,2h 25m,"7,343",13-11-2024,Economy
+BOM,DEL,SpiceJet,06:05,08:30,2h 25m,"7,824",13-11-2024,Economy
+BOM,DEL,SpiceJet,06:05,08:30,2h 25m,"7,343",13-11-2024,Economy
+BOM,DEL,SpiceJet,06:05,08:30,2h 25m,"7,824",13-11-2024,Economy
+BOM,DEL,Air India,05:55,08:05,2h 10m,"5,888",13-11-2024,Economy
+BOM,DEL,Air India,01:20,03:35,2h 15m,"5,520",13-11-2024,Economy
+BOM,DEL,Air India,01:30,03:45,2h 15m,"5,520",13-11-2024,Economy
+BOM,DEL,Air India,11:50,14:05,2h 15m,"5,888",13-11-2024,Economy
+BOM,DEL,Air India,11:50,14:05,2h 15m,"5,888",13-11-2024,Economy
+BOM,DEL,Air India,13:00,15:15,2h 15m,"5,888",13-11-2024,Economy
+BOM,DEL,Air India,14:40,16:55,2h 15m,"5,888",13-11-2024,Economy
+BOM,DEL,Air India,12:35,14:55,2h 20m,"5,888",13-11-2024,Economy
+BOM,DEL,Air India,06:30,08:40,2h 10m,"6,497",13-11-2024,Economy
+BOM,DEL,Air India,10:25,12:40,2h 15m,"6,497",13-11-2024,Economy
+BOM,DEL,Air India,08:45,10:55,2h 10m,"7,195",13-11-2024,Economy
+BOM,DEL,SpiceJet,06:05,08:30,2h 25m,"7,343",13-11-2024,Economy
+BOM,DEL,Air India,07:30,09:45,2h 15m,"7,195",13-11-2024,Economy
+BOM,DEL,Air India,07:00,09:20,2h 20m,"7,064",13-11-2024,Economy
+BOM,DEL,Air India,08:00,10:20,2h 20m,"8,052",13-11-2024,Economy
+BOM,DEL,Air India,09:00,11:20,2h 20m,"8,052",13-11-2024,Economy
+BOM,DEL,SpiceJet,06:05,08:30,2h 25m,"7,824",13-11-2024,Economy
+BOM,DEL,Air India,10:00,12:15,2h 15m,"10,739",13-11-2024,Economy
+BOM,IDR,Air India,07:40,11:15,3h 35m,"7,904",13-11-2024,Economy
