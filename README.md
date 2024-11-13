@@ -29,7 +29,6 @@ We developed this **Flight Pricing and Appraisal System** to address these chall
 - **Machine Learning**: Python (NumPy, Pandas, Scikit-Learn, Matplotlib) for data processing, model training, and visualization.
 - **Frontend**: HTML and CSS for the interactive user interface.
 - **Backend**: Flask handles server-side functionality, including web scraping with Selenium.
-- **API Integration**: Backend APIs communicate with the machine learning model and provide real-time flight pricing forecasts.
 - **Future Scope**: 
     - Incorporation of additional factors like weather conditions and geopolitical events.
     - Expansion to global markets for broader airline coverage.
