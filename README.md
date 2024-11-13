@@ -24,23 +24,11 @@ We developed this **Flight Pricing and Appraisal System** to address these chall
 - A simple and intuitive interface ensures easy navigation across devices.
 - Fully responsive design to deliver a seamless experience on mobile, tablet, and desktop.
 
-### 5. Personalized Recommendations 🎯
-- The system learns from user behavior and preferences, offering personalized flight booking recommendations.
-- Users receive suggestions based on similar travelers' ratings and preferences.
-
-### 6. Price Volatility Index 📈
-- A price fluctuation index helps users understand how flight prices change over time.
-- Users can plan their trips based on affordability and price trends.
-
-### 7. Data Visualization 📊
-- Pricing trends, comparisons, and changes are presented through easy-to-understand charts and graphics.
-- These tools allow users to make informed decisions efficiently.
-
 ## Tech Stack & Planning 🛠️
 
-- **Machine Learning**: Python with libraries such as NumPy, Pandas, Scikit-Learn, and Matplotlib for data preprocessing, model training, and data visualization.
-- **Frontend**: React.js to create an interactive user interface, integrated with Django for the backend.
-- **Backend**: Django handles server-side functionality and web scraping for flight data analysis.
+- **Machine Learning**: Python (NumPy, Pandas, Scikit-Learn, Matplotlib) for data processing, model training, and visualization.
+- **Frontend**: HTML and CSS for the interactive user interface.
+- **Backend**: Flask handles server-side functionality, including web scraping with Selenium.
 - **API Integration**: Backend APIs communicate with the machine learning model and provide real-time flight pricing forecasts.
 - **Future Scope**: 
     - Incorporation of additional factors like weather conditions and geopolitical events.
