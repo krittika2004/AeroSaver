@@ -1,4 +1,4 @@
-# Flight-Price-Prediction-Project
+# AeroSaver
 
 ## Inspiration Behind the Project ✈️
 
