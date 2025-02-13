@@ -60,4 +60,3 @@ Be respectful, inclusive, and helpful in all interactions. We welcome all contri
 For any questions, reach out via issues or discussions.
 
 Happy coding! 🚀
-```
