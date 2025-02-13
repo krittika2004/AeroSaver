@@ -1,5 +1,5 @@
 # AeroSaver
-
+Before you start make sure to go through contributing.md to start contributing.
 ## Inspiration Behind the Project ✈️
 
 In today's globalized world, air travel has become essential for millions of people. However, flight prices fluctuate unpredictably, making it hard for travelers to find the best deals. Several factors, such as demand changes, seasonal trends, and airline policies, further complicate the process. Many travelers face overhead costs as they try to determine the best time to book flights and choose the right airline.
