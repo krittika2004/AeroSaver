@@ -55,7 +55,8 @@ body {
     text-align: center;
     padding: 50px 20px;
     color: #333;
-    margin-bottom: 20px;
+    
+   
 }
 
 #not_found_message h1 {
@@ -90,8 +91,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    
    
 }
+
 
 .lottie-player {
     width: 300px;
