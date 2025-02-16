@@ -51,55 +51,64 @@ body {
 }
 
 /* 404 Page Styling */
+
 #not_found_message {
+    background: url("../static/bg_img.png") no-repeat center center/cover;
+    position: relative;
     text-align: center;
-    padding: 50px 20px;
-    color: #333;
-    
-   
-}
-
-#not_found_message h1 {
-    font-size: 72px;
-    color: #007bff;
-    margin-bottom: 5px;
-}
-#not_found_message h2 {
-    
-    margin-bottom: 20px;
-}
-#not_found_message  p{
-    font-size: 30px;
-    margin-bottom: 2rem;
-}
-
-.home-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
+    padding: 50px;
     color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.home-button:hover {
-    background-color: #0056b3;
-}
-
-.lottie-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 80vh;
     
+}
+
+/* Overlay for better readability */
+#not_found_message::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#not_found_message h1{
+    font-size: 70px;
+    color: white;
+    position: relative;
+    right: 45px;
+    bottom: 40px;
+    margin-bottom: 10px;
+}
+
+#not_found_message > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+.error-msg h2{
+    position: relative;
+    right: 10px;
+    font-size: 40px;
+    margin-bottom: 10px;
    
 }
-
-
-.lottie-player {
-    width: 300px;
-    height: 300px;
+.error-msg p{
+    position: relative;
+    right: 10px;
+    font-size: 29px;
+    margin-bottom: 7px;
 }
+
+
+
 
 /* Sticky Footer */
 #Footer {
