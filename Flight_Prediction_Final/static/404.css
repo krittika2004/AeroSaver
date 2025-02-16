@@ -53,7 +53,7 @@ body {
 /* 404 Page Styling */
 
 #not_found_message {
-    background: url("../static/bg_img.png") no-repeat center center/cover;
+    background: url("../static/planes-runway-modern-airport_1359-349.avif") no-repeat center center/cover;
     position: relative;
     text-align: center;
     padding: 50px;
@@ -79,11 +79,10 @@ body {
 }
 
 #not_found_message h1{
-    font-size: 70px;
+    font-size: 90px;
     color: white;
-    position: relative;
-    right: 45px;
-    bottom: 40px;
+    
+    
     margin-bottom: 10px;
 }
 
@@ -94,15 +93,13 @@ body {
 
 
 .error-msg h2{
-    position: relative;
-    right: 10px;
+    
     font-size: 40px;
     margin-bottom: 10px;
    
 }
 .error-msg p{
-    position: relative;
-    right: 10px;
+    
     font-size: 29px;
     margin-bottom: 7px;
 }
