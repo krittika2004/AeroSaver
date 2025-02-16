@@ -80,8 +80,10 @@ class DataProcessor:
             100.0,# demand_ma7
             -0.5  # price_elasticity
         ]
-        # Add encoded features (assuming 3 routes, 3 airlines, 3 aircraft types, 4 weather conditions, 4 seasons)
-        sample_state.extend([0.0] * (3 + 3 + 3 + 4 + 4))
+        # Add encoded features (1 route + 1 airline + 1 aircraft + 1 weather + 1 season)
+        sample_state.extend([0.0] * 5)  # 5 categorical features
+
+
         
         self.state_scaler.fit(np.array([sample_state]))
 
@@ -305,7 +307,7 @@ class DataProcessor:
         return encoding
 
 
-class ImprovedAirlinePricingEnv:
+class AirlinePricingEnv:
     """Simulates an airline pricing environment."""
 
     def __init__(self, historical_data, fuel_prices, climate_data, holiday_data, data_processor):
@@ -419,7 +421,17 @@ class ImprovedAirlinePricingEnv:
                 float(demand_ma7),
                 float(price_elasticity)
             ]
-            state.extend(route_encoded + airline_encoded + aircraft_encoded + weather_encoded + season_encoded)
+            # Add single encoded features (1 route + 1 airline + 1 aircraft + 1 weather + 1 season)
+            state.extend([
+                float(self.data_processor.route_encoder.get(route, 0.0)),
+                float(self.data_processor.airline_encoder.get(airline, 0.0)),
+                float(self.data_processor.aircraft_encoder.get(aircraft_type, 0.0)),
+                float(self.data_processor.weather_encoder.get(weather_condition, 0.0)),
+                float({'Winter': 0, 'Spring': 1, 'Summer': 2, 'Fall': 3}.get(season, 0.0))
+            ])
+
+
+
 
             return self.data_processor.state_scaler.transform(np.array(state, dtype=np.float32).reshape(1, -1)).flatten()
 
@@ -467,7 +479,9 @@ class ImprovedAirlinePricingEnv:
                     action_idx += 1
 
         total_revenue = 0
-        for route, airline in self.prices.keys():
+        for route_airline_date in self.prices.keys():
+            route, airline, flight_date = route_airline_date
+
             if route not in self.routes or airline not in self.airlines:
                 continue
             for days_ahead in range(self.max_days_ahead + 1):
@@ -657,7 +671,7 @@ def evaluate_model(env, agent, validation_data):
 def create_sample_data():
 
     """Create synthetic data for demonstration."""
-    dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
+    dates = pd.date_range(start='2024-01-01', end='2024-6-31', freq='D')
     routes = ['NYC-LAX', 'LAX-CHI', 'MIA-SEA']
     airlines = ['Delta', 'United', 'American']
     aircraft_types = ['B737', 'A320', 'B787']
@@ -730,7 +744,7 @@ def main(n_episodes, batch_size, learning_rate, gamma, epsilon_decay, target_upd
     data_processor.fit(train_historical, train_fuel_prices, train_climate_data, train_holiday_data)
 
     logging.info("Creating environment...")
-    env = ImprovedAirlinePricingEnv(train_historical, train_fuel_prices, train_climate_data, train_holiday_data, data_processor)
+    env = AirlinePricingEnv(train_historical, train_fuel_prices, train_climate_data, train_holiday_data, data_processor)
 
     state_size = len(env.reset())
     action_size = len(env.routes) * len(env.airlines) * (env.max_days_ahead + 1)
