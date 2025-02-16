@@ -1,0 +1,143 @@
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Wrapper to push footer to bottom */
+.wrapper {
+    flex: 1;
+}
+
+/* Header */
+#Main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #007bff;
+    color: white;
+}
+
+#Main h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+#navbar {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+
+#navbar li {
+    display: inline-block;
+}
+
+#navbar li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+#navbar li a:hover, #navbar li a.active {
+    text-decoration: underline;
+}
+
+/* 404 Page Styling */
+
+#not_found_message {
+    background: url("../static/planes-runway-modern-airport_1359-349.avif") no-repeat center center/cover;
+    position: relative;
+    text-align: center;
+    padding: 50px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    
+}
+
+/* Overlay for better readability */
+#not_found_message::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#not_found_message h1{
+    font-size: 90px;
+    color: white;
+    
+    
+    margin-bottom: 10px;
+}
+
+#not_found_message > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+.error-msg h2{
+    
+    font-size: 40px;
+    margin-bottom: 10px;
+   
+}
+.error-msg p{
+    
+    font-size: 29px;
+    margin-bottom: 7px;
+}
+
+
+
+
+/* Sticky Footer */
+#Footer {
+    background-color: #222;
+    color: #ccc;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+}
+
+/* Developer List */
+.developer-list {
+    list-style: none;
+    padding: 0;
+    font-size: 14px;
+}
+
+/* Social Icons */
+.socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px;
+    list-style: none;
+}
+
+.socials a {
+    color: white;
+    font-size: 24px;
+    transition: 0.3s;
+}
+
+.socials a:hover {
+    color: #007bff;
+}

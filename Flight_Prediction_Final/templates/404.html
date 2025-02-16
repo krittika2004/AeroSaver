@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Flight Price Prediction</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.jpg') }}">
+
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/404.css">
+
+    <!-- Lottie Player -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest"></script>
+
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header id="Main">
+            <a href="{{ url_for('index') }}">
+                <h3>FLIGHT PRICE PREDICTION</h3>
+            </a>
+            <nav>
+                <ul id="navbar">
+                    <li><a class="active" href="{{ url_for('index') }}">HOME</a></li>
+                    <li><a href="{{ url_for('predict') }}">PREDICTION</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- 404 Error Section -->
+        <main id="not_found_message">
+            <div class="airplane-container">
+                <div class="airplane"></div>
+            </div>
+
+            <h1 >404</h1>
+            <br><br><br><br><br><br><br><br><br><br>
+
+            
+            <br><br><br><br><br><br><br>
+            <div class="error-msg">
+
+                <h2>Oops! This flight has gone off course.</h2>
+                <p>The page you're looking for doesn't exist.</p>
+
+
+            </div>
+            
+
+            
+           
+
+            
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer id="Footer">
+        <div class="footer">
+            <ul class="socials">
+                <li><a target="_blank" href="https://github.com/krittika2004/Flight-Price-Prediction-Project">
+                    <i class="fa fa-github"></i></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="last">
+            <p>Developed by:</p>
+            <ul class="developer-list">
+                <li>Krittika Jari - 22103090</li>
+                <li>Rajendra Pratap Singh Dhaliwal - 22103094</li>
+                <li>Raghav Sharma - 22103098</li>
+                <li>Abhay Singhal - 22103101</li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>
