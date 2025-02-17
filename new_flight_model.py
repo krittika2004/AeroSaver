@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+import logging
+
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 import datetime
@@ -673,9 +675,9 @@ def create_sample_data():
     """Create synthetic data for demonstration."""
     dates = pd.date_range(start='2024-01-01', end='2024-6-30', freq='D')
 
-    routes = ['NYC-LAX', 'LAX-CHI', 'MIA-SEA']
+    routes = ['NYC-LAX', 'LAX-CHI']
     airlines = ['Delta', 'United', 'American']
-    aircraft_types = ['B737', 'A320', 'B787']
+    aircraft_types = ['B737', 'A320']
     historical_data, fuel_prices, climate_data, holiday_data = [], [], [], []
 
     for date in dates:
@@ -697,7 +699,7 @@ def create_sample_data():
         })
         
         # Create climate data for each location
-        for location in ['NYC', 'LAX', 'CHI', 'MIA', 'SEA']:
+        for location in ['NYC', 'LAX', 'CHI']:
             climate_data.append({
                 'Date': date,
                 'Location': location,
@@ -706,9 +708,9 @@ def create_sample_data():
             })
     
     # Create holiday data
-    for holiday in ['New Year', 'Independence Day', 'Thanksgiving', 'Christmas']:
+    for holiday in ['New Year', 'Independence Day', 'Christmas']:
         holiday_date = np.random.choice(dates)
-        for location in ['NYC', 'LAX', 'CHI', 'MIA', 'SEA']:
+        for location in ['NYC', 'LAX', 'CHI']:
             holiday_data.append({
                 'Date': holiday_date,
                 'Location': location,
@@ -722,14 +724,81 @@ def create_sample_data():
         pd.DataFrame(holiday_data)
     )
 
+def setup_gpu(disable_gpu=False, memory_limit=None):
+    """Configures GPU usage for TensorFlow.
+
+    Args:
+        disable_gpu (bool): If True, force CPU usage even if GPUs are available.
+        memory_limit (int): Optional memory limit in MB. If None, use memory growth.
+
+    Returns:
+        bool: True if a GPU is being used, False otherwise.
+    """
+    if disable_gpu:
+        logging.info("GPU disabled by user request.")
+        tf.config.set_visible_devices([], 'GPU')  # Hide all GPUs
+        return False
+
+    gpus = tf.config.list_physical_devices('GPU')
+    if not gpus:
+        logging.info("No GPUs found. Running on CPU.")
+        return False
+
+    try:
+        if memory_limit:
+            # Restrict TensorFlow to only allocate the specified amount of memory
+            tf.config.set_logical_device_configuration(
+                gpus[0],
+                [tf.config.LogicalDeviceConfiguration(memory_limit=memory_limit)]
+            )
+            logging.info(f"GPU memory limit set to {memory_limit} MB")
+        else:
+            # Allow memory growth (recommended)
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            logging.info("GPU memory growth enabled.")
+
+        # Enable mixed precision (if supported by the GPU)
+        tf.keras.mixed_precision.set_global_policy('mixed_float16')
+        logging.info("Mixed precision (float16) enabled.")
+        logging.info(f"Using GPU: {gpus}")
+        return True
+
+    except RuntimeError as e:
+        # Memory growth must be set at program startup, so handle potential errors
+        logging.error(f"Error configuring GPU: {e}")
+        logging.info("Falling back to CPU.")
+        return False
+
+def add_gpu_arguments(parser):
+    """Adds GPU-related arguments to an ArgumentParser."""
+    group = parser.add_argument_group('GPU Settings')
+    group.add_argument('--disable_gpu', action='store_true',
+                       help='Disable GPU usage, even if available.')
+    group.add_argument('--memory_limit', type=int, default=None,
+                       help='Limit GPU memory usage (in MB). If not set, use memory growth.')
+    return parser
+
+@tf.function
+def train_step(model, states, targets):
+    """Optimized training step for GPU execution."""
+    with tf.GradientTape() as tape:
+        predictions = model(states, training=True)  # Forward pass
+        loss = tf.keras.losses.Huber()(targets, predictions)  # Use tf.keras.losses
+
+    gradients = tape.gradient(loss, model.trainable_variables)
+    model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    return loss
+
 def main(n_episodes, batch_size, learning_rate, gamma, epsilon_decay, target_update_freq):
     """Main function to run the airline pricing simulation."""
+
     logging.info("Creating sample data...")
     historical_data, fuel_prices, climate_data, holiday_data = create_sample_data()
 
     logging.info("Splitting data into train and validation sets...")
-    train_dates = pd.date_range(start='2024-01-01', end='2024-09-30')
-    val_dates = pd.date_range(start='2024-10-01', end='2024-12-31')
+    train_dates = pd.date_range(start='2024-01-01', end='2024-04-30')
+    val_dates = pd.date_range(start='2024-06-01', end='2024-06-30')
 
     train_historical = historical_data[historical_data['Date'].isin(train_dates)]
     val_historical = historical_data[historical_data['Date'].isin(val_dates)]
@@ -773,6 +842,8 @@ def main(n_episodes, batch_size, learning_rate, gamma, epsilon_decay, target_upd
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train DQN agent for airline pricing.")
+    parser = add_gpu_arguments(parser)  # Add GPU-related arguments
+
     parser.add_argument('--n_episodes', type=int, default=100, help='Training episodes.')
     parser.add_argument('--batch_size', type=int, default=64, help='Training batch size.')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Optimizer learning rate.')
@@ -780,4 +851,11 @@ if __name__ == "__main__":
     parser.add_argument('--epsilon_decay', type=float, default=0.995, help='Epsilon decay rate.')
     parser.add_argument('--target_update_freq', type=int, default=10, help='Target network update frequency.')
     args = parser.parse_args()
+
+    # Setup GPU *before* creating any TensorFlow objects
+    gpu_available = setup_gpu(args.disable_gpu, args.memory_limit)
+
+    if not gpu_available:
+        logging.warning("Running on CPU. Training may be slow.")
+
     main(args.n_episodes, args.batch_size, args.learning_rate, args.gamma, args.epsilon_decay, args.target_update_freq)
