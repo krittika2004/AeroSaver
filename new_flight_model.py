@@ -671,7 +671,8 @@ def evaluate_model(env, agent, validation_data):
 def create_sample_data():
 
     """Create synthetic data for demonstration."""
-    dates = pd.date_range(start='2024-01-01', end='2024-6-31', freq='D')
+    dates = pd.date_range(start='2024-01-01', end='2024-6-30', freq='D')
+
     routes = ['NYC-LAX', 'LAX-CHI', 'MIA-SEA']
     airlines = ['Delta', 'United', 'American']
     aircraft_types = ['B737', 'A320', 'B787']
