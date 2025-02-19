@@ -724,8 +724,12 @@ def create_sample_data():
         pd.DataFrame(holiday_data)
     )
 
+# Global GPU status
+GPU_AVAILABLE = None
+
 def setup_gpu(disable_gpu=False, memory_limit=None):
-    """Configures GPU usage for TensorFlow.
+    """Configures GPU usage for TensorFlow with enhanced error handling and diagnostics.
+    Checks GPU only once and stores the status globally.
 
     Args:
         disable_gpu (bool): If True, force CPU usage even if GPUs are available.
@@ -734,41 +738,90 @@ def setup_gpu(disable_gpu=False, memory_limit=None):
     Returns:
         bool: True if a GPU is being used, False otherwise.
     """
-    if disable_gpu:
-        logging.info("GPU disabled by user request.")
-        tf.config.set_visible_devices([], 'GPU')  # Hide all GPUs
-        return False
-
+    global GPU_AVAILABLE
+    
+    # Return cached status if already checked
+    if GPU_AVAILABLE is not None:
+        return GPU_AVAILABLE
+        
+    # Check if GPU is available
+    logging.info("Initial GPU availability check...")
     gpus = tf.config.list_physical_devices('GPU')
-    if not gpus:
-        logging.info("No GPUs found. Running on CPU.")
-        return False
 
+    
+    # Print detailed GPU information
+    if gpus:
+        logging.info(f"Found {len(gpus)} GPUs:")
+        for gpu in gpus:
+            logging.info(f"GPU Device: {gpu}")
+    else:
+        logging.info("No GPU devices found")
+        
+    # Check CUDA and cuDNN availability
     try:
+        from tensorflow.python.platform import build_info
+        cuda_version = build_info.build_info.get('cuda_version', 'Not available')
+        cudnn_version = build_info.build_info.get('cudnn_version', 'Not available')
+        logging.info(f"CUDA Version: {cuda_version}")
+        logging.info(f"cuDNN Version: {cudnn_version}")
+    except ImportError:
+        logging.warning("Could not check CUDA/cuDNN versions")
+
+    
+    if disable_gpu:
+        logging.info("GPU disabled by user request. Running on CPU.")
+        tf.config.set_visible_devices([], 'GPU')
+        GPU_AVAILABLE = False
+        return GPU_AVAILABLE
+        
+    try:
+        # Configure GPU memory settings
         if memory_limit:
-            # Restrict TensorFlow to only allocate the specified amount of memory
-            tf.config.set_logical_device_configuration(
-                gpus[0],
-                [tf.config.LogicalDeviceConfiguration(memory_limit=memory_limit)]
-            )
-            logging.info(f"GPU memory limit set to {memory_limit} MB")
+            try:
+                tf.config.set_logical_device_configuration(
+                    gpus[0],
+                    [tf.config.LogicalDeviceConfiguration(memory_limit=memory_limit)]
+                )
+                logging.info(f"GPU memory limit set to {memory_limit} MB")
+            except Exception as e:
+                logging.warning(f"Failed to set memory limit: {e}. Using memory growth instead.")
+                for gpu in gpus:
+                    tf.config.experimental.set_memory_growth(gpu, True)
         else:
-            # Allow memory growth (recommended)
             for gpu in gpus:
                 tf.config.experimental.set_memory_growth(gpu, True)
             logging.info("GPU memory growth enabled.")
 
-        # Enable mixed precision (if supported by the GPU)
-        tf.keras.mixed_precision.set_global_policy('mixed_float16')
-        logging.info("Mixed precision (float16) enabled.")
-        logging.info(f"Using GPU: {gpus}")
-        return True
+        # Enable mixed precision training if supported
+        try:
+            tf.keras.mixed_precision.set_global_policy('mixed_float16')
+            logging.info("Mixed precision (float16) enabled.")
+        except Exception as e:
+            logging.warning(f"Mixed precision not available: {e}")
+
+        # Verify GPU is available and working
+        try:
+            with tf.device('/GPU:0'):
+                test_tensor = tf.constant([1.0, 2.0, 3.0])
+                _ = test_tensor + 1.0
+            logging.info(f"GPU successfully configured: {gpus}")
+            GPU_AVAILABLE = True
+            return GPU_AVAILABLE
+        except Exception as e:
+            logging.error(f"GPU test failed: {e}")
+            logging.info("Falling back to CPU.")
+            tf.config.set_visible_devices([], 'GPU')
+            GPU_AVAILABLE = False
+            return GPU_AVAILABLE
 
     except RuntimeError as e:
-        # Memory growth must be set at program startup, so handle potential errors
         logging.error(f"Error configuring GPU: {e}")
         logging.info("Falling back to CPU.")
-        return False
+        tf.config.set_visible_devices([], 'GPU')
+        GPU_AVAILABLE = False
+        return GPU_AVAILABLE
+
+
 
 def add_gpu_arguments(parser):
     """Adds GPU-related arguments to an ArgumentParser."""
@@ -854,8 +907,5 @@ if __name__ == "__main__":
 
     # Setup GPU *before* creating any TensorFlow objects
     gpu_available = setup_gpu(args.disable_gpu, args.memory_limit)
-
-    if not gpu_available:
-        logging.warning("Running on CPU. Training may be slow.")
 
     main(args.n_episodes, args.batch_size, args.learning_rate, args.gamma, args.epsilon_decay, args.target_update_freq)
