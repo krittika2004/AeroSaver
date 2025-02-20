@@ -1,16 +1,20 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow info messages
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN optimizations for consistent results
+
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+
 import logging
+import random
+import argparse
+import datetime
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
-import datetime
 from collections import deque
-import random
-import os
-import argparse
-import logging
+
 
 # Set seeds for reproducibility
 os.environ['PYTHONHASHSEED'] = '0'
@@ -158,7 +162,8 @@ class DataProcessor:
             'Capacity': historical_data['Capacity'].mode()[0]
         })
         fuel_prices = fuel_prices.fillna(fuel_prices.mean())
-        climate_data = climate_data.ffill()  # Replace deprecated fillna(method='ffill')
+        climate_data = climate_data.ffill()
+
         holiday_data = holiday_data.fillna('None')
 
         # Remove outliers
@@ -180,7 +185,9 @@ class DataProcessor:
             
         historical_data = historical_data.sort_values(['Route', 'Airline', 'Date'])
         historical_data.loc[:, 'PriceElasticity'] = historical_data.groupby(
-            ['Route', 'Airline'], group_keys=False).apply(calculate_elasticity).fillna(0)
+            ['Route', 'Airline'], group_keys=False).apply(lambda group: calculate_elasticity(group[['Price', 'Demand']]), include_groups=False).fillna(0)
+
+
             
         return historical_data
 
@@ -547,7 +554,9 @@ class DQNAgent:
 
     def _build_model(self):
         model = tf.keras.Sequential([
-            tf.keras.layers.Dense(256, input_dim=self.state_size),
+            tf.keras.layers.Input(shape=(self.state_size,)),
+            tf.keras.layers.Dense(256),
+
             tf.keras.layers.BatchNormalization(), tf.keras.layers.Activation('relu'), tf.keras.layers.Dropout(0.2),
             tf.keras.layers.Dense(128), tf.keras.layers.BatchNormalization(), tf.keras.layers.Activation('relu'), tf.keras.layers.Dropout(0.2),
             tf.keras.layers.Dense(64), tf.keras.layers.BatchNormalization(), tf.keras.layers.Activation('relu'),
@@ -751,19 +760,21 @@ def setup_gpu(disable_gpu=False, memory_limit=None):
     
     # Print detailed GPU information
     if gpus:
-        logging.info(f"Found {len(gpus)} GPUs:")
-        for gpu in gpus:
-            logging.info(f"GPU Device: {gpu}")
+        logging.debug(f"Found {len(gpus)} GPUs")
     else:
-        logging.info("No GPU devices found")
+        logging.debug("No GPU devices found")
+
+
+
         
     # Check CUDA and cuDNN availability
     try:
         from tensorflow.python.platform import build_info
         cuda_version = build_info.build_info.get('cuda_version', 'Not available')
         cudnn_version = build_info.build_info.get('cudnn_version', 'Not available')
-        logging.info(f"CUDA Version: {cuda_version}")
-        logging.info(f"cuDNN Version: {cudnn_version}")
+        logging.debug(f"CUDA Version: {cuda_version}")
+        logging.debug(f"cuDNN Version: {cudnn_version}")
+
     except ImportError:
         logging.warning("Could not check CUDA/cuDNN versions")
 
@@ -782,20 +793,27 @@ def setup_gpu(disable_gpu=False, memory_limit=None):
                     gpus[0],
                     [tf.config.LogicalDeviceConfiguration(memory_limit=memory_limit)]
                 )
-                logging.info(f"GPU memory limit set to {memory_limit} MB")
+                logging.debug(f"GPU memory limit set to {memory_limit} MB")
             except Exception as e:
                 logging.warning(f"Failed to set memory limit: {e}. Using memory growth instead.")
                 for gpu in gpus:
                     tf.config.experimental.set_memory_growth(gpu, True)
+
+
+
+
         else:
             for gpu in gpus:
                 tf.config.experimental.set_memory_growth(gpu, True)
-            logging.info("GPU memory growth enabled.")
+            logging.debug("GPU memory growth enabled.")
+
+
 
         # Enable mixed precision training if supported
         try:
             tf.keras.mixed_precision.set_global_policy('mixed_float16')
-            logging.info("Mixed precision (float16) enabled.")
+            logging.debug("Mixed precision (float16) enabled.")
+
         except Exception as e:
             logging.warning(f"Mixed precision not available: {e}")
 
@@ -804,7 +822,8 @@ def setup_gpu(disable_gpu=False, memory_limit=None):
             with tf.device('/GPU:0'):
                 test_tensor = tf.constant([1.0, 2.0, 3.0])
                 _ = test_tensor + 1.0
-            logging.info(f"GPU successfully configured: {gpus}")
+            logging.debug(f"GPU successfully configured")
+
             GPU_AVAILABLE = True
             return GPU_AVAILABLE
         except Exception as e:
