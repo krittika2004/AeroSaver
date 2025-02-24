@@ -35,6 +35,9 @@
         <li><a href="{{ url_for( 'index' ) }}">HOME</a></li>
         <li><a class="active" href="{{ url_for( 'predict' ) }}">PREDICTION</a></li>
         <!-- <li><a href="#">OVERVIEW</a></li> -->
+        <li id="google_translate_element_container">
+          <div id="google_translate_element"></div>
+        </li>        
       </ul>
     </div>
   </section>
@@ -174,6 +177,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
     integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en', // Your site's original language
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>
