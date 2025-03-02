@@ -1,7 +1,11 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import pickle
 import pandas as pd
 import os
+import requests
+
+API_KEY = "c464ca384d09a925ab5666aa"
+CURRENCY_API_URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/INR"
 
 app = Flask(__name__)
 
@@ -18,9 +22,39 @@ except Exception as e:
     print(f"Error loading model: {e}")
     model = None
 
+def get_currency_rates():
+    try:
+        response = requests.get(CURRENCY_API_URL)
+        if response.status_code == 200:
+            return response.json()["conversion_rates"]
+        else:
+            print(f"Error fetching rates: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Currency API request error: {e}")
+        return None
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
+# New route for getting exchange rates via AJAX
+@app.route("/get_exchange_rate")
+def get_exchange_rate():
+    currency = request.args.get("currency", "USD")
+    
+    rates = get_currency_rates()
+    if rates and currency in rates:
+        return jsonify({
+            "success": True,
+            "rate": rates[currency],
+            "currency": currency
+        })
+    
+    return jsonify({
+        "success": False,
+        "message": "Failed to get exchange rate"
+    })
 
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
@@ -53,14 +87,14 @@ def predict():
             # Airlines
             airline = request.form['airline']
             Airline_Vistara = 1 if airline == 'Vistara' else 0
-            Airline_Air_India = 1 if airline == 'Air_India' else 0
-            Airline_IndiGo = 1 if airline == 'Indigo' else 0
-            Airline_AirAsia = 1 if airline == 'AirAsia' else 0
+            Airline_Air_India = 1 if airline == 'Air India' else 0
+            Airline_IndiGo = 1 if airline == 'IndiGo' else 0
+            Airline_AirAsia = 1 if airline == 'Air Asia' else 0
             Airline_GO_FIRST = 1 if airline == 'GO_FIRST' else 0
             Airline_SpiceJet = 1 if airline == 'SpiceJet' else 0
             Airline_AkasaAir = 1 if airline == 'AkasaAir' else 0
-            Airline_AllianceAir = 1 if airline == 'AllianceAir' else 0
-            Airline_StarAir = 1 if airline == 'StarAir' else 0
+            Airline_AllianceAir = 0  # Default value if not in form
+            Airline_StarAir = 0      # Default value if not in form
 
             # Source
             Source = request.form["source"]
@@ -86,7 +120,10 @@ def predict():
                                          Destination_Mumbai, Destination_Delhi, Destination_Kolkata, Destination_Hyderabad]])
 
             output = round(prediction[0], 2)
-            return render_template("predict.html", prediction_text=f"Your Flight price is Rs. {output}")
+            
+            prediction_text = f"Your Flight price is Rs. {output}"
+            
+            return render_template("predict.html", prediction_text=prediction_text, prediction_value=output)
 
         except Exception as e:
             return render_template("predict.html", prediction_text=f"Error in prediction: {e}")
