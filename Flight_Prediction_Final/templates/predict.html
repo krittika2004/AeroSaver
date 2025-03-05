@@ -132,14 +132,36 @@
           <input type="submit" value="Predict">
           <br>
           <br>
-          <h4>{{ prediction_text }}</h4>
+          {% if prediction_value %}
+          <input type="hidden" id="original_price" value="{{ prediction_value }}">
+          <div class="price-display">
+            <h4 id="price_display">Your Flight price is Rs. {{ prediction_value }}</h4>
+          <div class="currency-converter">
+            <label for="currency_selector">Convert to Currency:</label>
+            <div class="currency-selector-container">
+              <select id="currency_selector" onchange="convertCurrency(this.value)">
+                <option value="INR" selected>🇮🇳 Indian Rupee (INR)</option>
+                <option value="USD">🇺🇸 US Dollar (USD)</option>
+                <option value="EUR">🇪🇺 Euro (EUR)</option>
+                <option value="GBP">🇬🇧 British Pound (GBP)</option>
+                <option value="AED">🇦🇪 UAE Dirham (AED)</option>
+                <option value="AUD">🇦🇺 Australian Dollar (AUD)</option>
+                <option value="CAD">🇨🇦 Canadian Dollar (CAD)</option>
+                <option value="SGD">🇸🇬 Singapore Dollar (SGD)</option>
+                <option value="JPY">🇯🇵 Japanese Yen (JPY)</option>
+              </select>
+              <div class="select-arrow">
+                <i class="fa fa-chevron-down"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endif %}
         </center>
-        
     </div>
     </form>
     </div>
   </section>
-
 
   <footer id="Footer">
     <div class="footer">
@@ -171,6 +193,53 @@
         $(".select2 option[value!='" + select1 + "']").show();
       }
     }
+    
+    function convertCurrency(currency) {
+    const originalPrice = parseFloat(document.getElementById('original_price').value);
+    if (isNaN(originalPrice)) return;
+    
+    // Visual feedback during conversion
+    document.getElementById('price_display').innerHTML = `<i class="fa fa-refresh fa-spin"></i> Converting...`;
+    
+    if (currency === 'INR') {
+      document.getElementById('price_display').innerHTML = `<span style="font-weight:600;">Your Flight price is</span> <span style="color:#639FAB;">Rs. ${originalPrice.toFixed(2)}</span>`;
+      return;
+    }
+    
+    fetch(`/get_exchange_rate?currency=${currency}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const convertedPrice = originalPrice * data.rate;
+          const currencySymbols = {
+            "USD": "$", "EUR": "€", "GBP": "£", "AED": "AED", 
+            "AUD": "A$", "CAD": "C$", "SGD": "S$", "JPY": "¥"
+          };
+          const symbol = currencySymbols[currency] || currency;
+          
+          // Country flags for each currency option
+          const flags = {
+            "USD": "🇺🇸", "EUR": "🇪🇺", "GBP": "🇬🇧", "AED": "🇦🇪",
+            "AUD": "🇦🇺", "CAD": "🇨🇦", "SGD": "🇸🇬", "JPY": "🇯🇵", "INR": "🇮🇳"
+          };
+          
+          document.getElementById('price_display').innerHTML = 
+            `<span style="font-weight:600;">Your Flight price is</span> <span style="color:#639FAB;">${flags[currency]} ${symbol} ${convertedPrice.toFixed(2)}</span>`;
+        } else {
+          document.getElementById('price_display').innerHTML = `<span style="color:#d9534f;">⚠️ Conversion failed</span>`;
+          setTimeout(() => {
+            alert("Could not fetch exchange rates. Please try again later.");
+          }, 500);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching exchange rates:', error);
+        document.getElementById('price_display').innerHTML = `<span style="color:#d9534f;">⚠️ Conversion error</span>`;
+        setTimeout(() => {
+          alert("Error fetching exchange rates. Please try again later.");
+        }, 500);
+      });
+  }
   </script>
 
 
@@ -180,7 +249,7 @@
     <script type="text/javascript">
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
-          pageLanguage: 'en', // Your site's original language
+          pageLanguage: 'en', 
           layout: google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element');
       }
