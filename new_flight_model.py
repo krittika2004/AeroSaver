@@ -26,10 +26,25 @@ tf.random.set_seed(42)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class DataProcessor:
-    """Handles data preprocessing, scaling, and encoding for flight data."""
+    """Handles data preprocessing, scaling, and encoding for flight data.
+    
+    This class is responsible for preparing flight data for machine learning models.
+    It handles feature scaling, categorical encoding, and data transformation.
+    
+    Attributes:
+        state_scaler (StandardScaler): Scaler for state features
+        price_scaler (MinMaxScaler): Scaler for price values
+        demand_scaler (StandardScaler): Scaler for demand values
+        route_encoder (dict): Mapping for route categorical encoding
+        airline_encoder (dict): Mapping for airline categorical encoding
+        aircraft_encoder (dict): Mapping for aircraft type encoding
+        weather_encoder (dict): Mapping for weather condition encoding
+        holiday_encoder (dict): Mapping for holiday encoding
+    """
 
     def __init__(self):
-        """Initialize scalers and encoders."""
+        """Initialize all scalers and encoders with empty states."""
+
         self.state_scaler = StandardScaler()
         self.price_scaler = MinMaxScaler(feature_range=(0.1, 0.9))
         self.demand_scaler = StandardScaler()
@@ -41,6 +56,9 @@ class DataProcessor:
 
     def fit(self, historical_data, fuel_prices, climate_data, holiday_data):
         """Fit scalers and encoders on training data.
+        
+        This method prepares the data processors by fitting them to the training data.
+        It handles both numerical scaling and categorical encoding.
         
         Args:
             historical_data (pd.DataFrame): Flight history data with columns:
@@ -66,7 +84,9 @@ class DataProcessor:
                 
         Raises:
             ValueError: If any input data is empty or invalid
+            RuntimeError: If fitting process encounters numerical issues
         """
+
         if historical_data.empty or fuel_prices.empty or climate_data.empty or holiday_data.empty:
             raise ValueError("Input data cannot be empty")
             
@@ -111,6 +131,13 @@ class DataProcessor:
     def transform(self, historical_data, fuel_prices, climate_data, holiday_data):
         """Process and clean all input data into model-ready format.
         
+        This method performs the following operations:
+        1. Validates input data structure
+        2. Handles missing values
+        3. Removes outliers
+        4. Merges all data sources
+        5. Creates derived features
+        
         Args:
             historical_data (pd.DataFrame): Raw flight history data
             fuel_prices (pd.DataFrame): Raw fuel price data
@@ -122,7 +149,9 @@ class DataProcessor:
             
         Raises:
             ValueError: If required columns are missing from input data
+            RuntimeError: If data transformation fails
         """
+
         # Validate input data
         required_columns = {
             'historical_data': ['Date', 'Route', 'Airline', 'AircraftType', 'Price', 'Demand', 'Capacity'],
@@ -350,7 +379,7 @@ class AirlinePricingEnv:
         self.airlines = self.historical_data['Airline'].unique()
         self.aircraft_types = self.historical_data['AircraftType'].unique()
         self.current_date = self.historical_data['Date'].min()
-        self.max_days_ahead = 90
+        self.max_days_ahead = 9
         self.simulation_length_days = 365
         self.seats_capacity = 150
         self.prices = {}
