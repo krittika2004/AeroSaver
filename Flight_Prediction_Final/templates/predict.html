@@ -3,13 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
-
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
   <link rel="shortcut icon" href="{{ url_for('static', filename='logo.jpg') }}">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Flight Price Prediction</title>
 
   <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet">
@@ -25,7 +21,6 @@
 
 <body>
 
-
   <section id="Main">
     <a href="{{ url_for( 'index' ) }}">
       <h3>FLIGHT PRICE PREDICTION</h3>
@@ -34,17 +29,17 @@
       <ul id="navbar">
         <li><a href="{{ url_for( 'index' ) }}">HOME</a></li>
         <li><a class="active" href="{{ url_for( 'predict' ) }}">PREDICTION</a></li>
-        <!-- <li><a href="#">OVERVIEW</a></li> -->
         <li id="google_translate_element_container">
           <div id="google_translate_element"></div>
-        </li>        
+        </li>
+        <li>
+          <button id="theme-toggle" class="btn">🌙 Dark Mode</button>
+        </li>
       </ul>
     </div>
   </section>
 
-
   <!-- Predict -->
-
   <section id="Predict">
     <div class="border">
       <form action="{{ url_for( 'predict' ) }}" method="post">
@@ -57,12 +52,10 @@
               </div>
             </div>
 
-
             <div class="card">
               <div class="inputs">
                 <h5 class="title">Source</h5>
-                <select name="source" id="source select1" required="required" class="select1"
-                  onchange="getSelectValue(this.value)">
+                <select name="source" required="required">
                   <option value="Bangalore">Bangalore</option>
                   <option value="Delhi">Delhi</option>
                   <option value="Mumbai">Mumbai</option>
@@ -70,7 +63,6 @@
                 </select>
               </div>
             </div>
-
 
             <div class="card">
               <div class="inputs">
@@ -84,7 +76,6 @@
                 </select>
               </div>
             </div>
-
           </div>
 
           <div class="col2">
@@ -95,11 +86,10 @@
               </div>
             </div>
 
-
             <div class="card">
               <div class="inputs">
                 <h5 class="title">Destination</h5>
-                <select name="destination" id="destination select2" required="required" class="select2">
+                <select name="destination" required="required">
                   <option value="Mumbai">Mumbai</option>
                   <option value="Delhi">Delhi</option>
                   <option value="Kolkata">Kolkata</option>
@@ -109,11 +99,10 @@
               </div>
             </div>
 
-
             <div class="card">
               <div class="inputs">
                 <h5 class="title">Select Airline</h5>
-                <select name="airline" id="airline" required="required" class="select2">
+                <select name="airline" required="required">
                   <option value="Vistara">Vistara</option>
                   <option value="Air India">Air India</option>
                   <option value="IndiGo">IndiGo</option>
@@ -130,43 +119,13 @@
 
         <center>
           <input type="submit" value="Predict">
-          <br>
-          <br>
-          {% if prediction_value %}
-          <input type="hidden" id="original_price" value="{{ prediction_value }}">
-          <div class="price-display">
-            <h4 id="price_display">Your Flight price is Rs. {{ prediction_value }}</h4>
-          <div class="currency-converter">
-            <label for="currency_selector">Convert to Currency:</label>
-            <div class="currency-selector-container">
-              <select id="currency_selector" onchange="convertCurrency(this.value)">
-                <option value="INR" selected>🇮🇳 Indian Rupee (INR)</option>
-                <option value="USD">🇺🇸 US Dollar (USD)</option>
-                <option value="EUR">🇪🇺 Euro (EUR)</option>
-                <option value="GBP">🇬🇧 British Pound (GBP)</option>
-                <option value="AED">🇦🇪 UAE Dirham (AED)</option>
-                <option value="AUD">🇦🇺 Australian Dollar (AUD)</option>
-                <option value="CAD">🇨🇦 Canadian Dollar (CAD)</option>
-                <option value="SGD">🇸🇬 Singapore Dollar (SGD)</option>
-                <option value="JPY">🇯🇵 Japanese Yen (JPY)</option>
-              </select>
-              <div class="select-arrow">
-                <i class="fa fa-chevron-down"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-          {% endif %}
         </center>
-    </div>
-    </form>
+      </form>
     </div>
   </section>
 
   <footer id="Footer">
     <div class="footer">
-        <!-- <h3> Flight Price Prediction </h3> -->
-
         <ul class="socials">
             <li><a target="_blank" href="https://github.com/krittika2004/Flight-Price-Prediction-Project">
                 <i class="fa fa-github"></i></a>
@@ -183,78 +142,43 @@
             <li>Abhay Singhal - 22103101</li>
         </ul>
     </div>
-</footer>
+  </footer>
 
-
+  <!-- Dark Mode Script -->
   <script>
-    function getSelectValue(select1) {
-      if (select1 != '') {
-        $(".select2 option[value='" + select1 + "']").hide();
-        $(".select2 option[value!='" + select1 + "']").show();
-      }
-    }
-    
-    function convertCurrency(currency) {
-    const originalPrice = parseFloat(document.getElementById('original_price').value);
-    if (isNaN(originalPrice)) return;
-    
-    // Visual feedback during conversion
-    document.getElementById('price_display').innerHTML = `<i class="fa fa-refresh fa-spin"></i> Converting...`;
-    
-    if (currency === 'INR') {
-      document.getElementById('price_display').innerHTML = `<span style="font-weight:600;">Your Flight price is</span> <span style="color:#639FAB;">Rs. ${originalPrice.toFixed(2)}</span>`;
-      return;
-    }
-    
-    fetch(`/get_exchange_rate?currency=${currency}`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          const convertedPrice = originalPrice * data.rate;
-          const currencySymbols = {
-            "USD": "$", "EUR": "€", "GBP": "£", "AED": "AED", 
-            "AUD": "A$", "CAD": "C$", "SGD": "S$", "JPY": "¥"
-          };
-          const symbol = currencySymbols[currency] || currency;
-          
-          // Country flags for each currency option
-          const flags = {
-            "USD": "🇺🇸", "EUR": "🇪🇺", "GBP": "🇬🇧", "AED": "🇦🇪",
-            "AUD": "🇦🇺", "CAD": "🇨🇦", "SGD": "🇸🇬", "JPY": "🇯🇵", "INR": "🇮🇳"
-          };
-          
-          document.getElementById('price_display').innerHTML = 
-            `<span style="font-weight:600;">Your Flight price is</span> <span style="color:#639FAB;">${flags[currency]} ${symbol} ${convertedPrice.toFixed(2)}</span>`;
-        } else {
-          document.getElementById('price_display').innerHTML = `<span style="color:#d9534f;">⚠️ Conversion failed</span>`;
-          setTimeout(() => {
-            alert("Could not fetch exchange rates. Please try again later.");
-          }, 500);
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleButton = document.getElementById("theme-toggle");
+        const body = document.body;
+
+        // Check local storage for theme preference
+        if (localStorage.getItem("theme") === "dark") {
+            body.classList.add("dark-mode");
+            toggleButton.textContent = "☀️ Light Mode";
         }
-      })
-      .catch(error => {
-        console.error('Error fetching exchange rates:', error);
-        document.getElementById('price_display').innerHTML = `<span style="color:#d9534f;">⚠️ Conversion error</span>`;
-        setTimeout(() => {
-          alert("Error fetching exchange rates. Please try again later.");
-        }, 500);
-      });
-  }
+
+        toggleButton.addEventListener("click", () => {
+            body.classList.toggle("dark-mode");
+            if (body.classList.contains("dark-mode")) {
+                localStorage.setItem("theme", "dark");
+                toggleButton.textContent = "☀️ Light Mode";
+            } else {
+                localStorage.setItem("theme", "light");
+                toggleButton.textContent = "🌙 Dark Mode";
+            }
+        });
+    });
   </script>
 
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en', 
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
-    integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript">
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'en', 
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-      }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>

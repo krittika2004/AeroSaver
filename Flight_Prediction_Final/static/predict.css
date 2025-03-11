@@ -407,6 +407,68 @@ h4 {
   border-bottom: 3px solid #639FAB;
   text-align: center;
 }
+/* Define Light Mode (Default) */
+:root {
+  --bg-color: white;
+  --text-color: black;
+  --navbar-bg: linear-gradient(135deg, #2A7F7F, #639FAB, #8161A7);
+  --navbar-text: white;
+  --button-bg: #333;
+  --button-text: white;
+}
+
+/* Define Dark Mode */
+.dark-mode {
+  --bg-color: #121212;
+  --text-color: #121212;
+  --navbar-bg: #1e1e1e;
+  --navbar-text: #ffffff;
+  --button-bg: #444;
+  --button-text: #fff;
+}
+
+/* Apply Variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#Main {
+  background: var(--navbar-bg);
+}
+
+#navbar li a {
+  color: var(--navbar-text);
+}
+
+.btn {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.btn:hover {
+  background-color: #555;
+}
+/* Dark Mode Toggle Button */
+#theme-toggle {
+  padding: 12px 20px;  /* Increased padding */
+  font-size: 16px;  /* Increased font size */
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Button Hover Effect */
+#theme-toggle:hover {
+  background-color: #555;
+  transform: scale(1.05);
+}
+
 
 .currency-flag {
   width: 24px;

@@ -361,6 +361,71 @@ th {
     text-align: center;
     color: gray;
 }
+/* Default Light Mode */
+:root {
+    --bg-color: white;
+    --text-color: black;
+    --navbar-bg: linear-gradient(135deg, #2A7F7F, #639FAB, #8161A7);
+    --navbar-text: white;
+    --button-bg: #333;
+    --button-text: white;
+    --section-bg: #f0f8ff;  /* Light mode section background */
+}
+
+/* Dark Mode */
+.dark-mode {
+    --bg-color: #121212;
+    --text-color: #f5f5f5;
+    --navbar-bg: #1e1e1e;
+    --navbar-text: #ffffff;
+    --button-bg: #444;
+    --button-text: #fff;
+    --section-bg: #1a1a1a;  /* Dark mode section background */
+}
+
+/* Apply Variables */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Navbar */
+#Main {
+    background: var(--navbar-bg);
+}
+
+#navbar li a {
+    color: var(--navbar-text);
+}
+
+/* Sections */
+#Front, #Model, .page {
+    background-color: var(--section-bg);
+}
+
+/* Footer */
+#Footer {
+    background-color: var(--navbar-bg);
+    color: var(--text-color);
+}
+
+/* Buttons */
+.btn, #theme-toggle {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--button-bg);
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn:hover, #theme-toggle:hover {
+    background-color: #555;
+}
+
 
 /* Google Translate Element */
 #google_translate_element_container {
