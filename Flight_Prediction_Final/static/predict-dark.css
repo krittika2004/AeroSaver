@@ -1,0 +1,399 @@
+@import url('https://fonts.cdnfonts.com/css/poppins');
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    width: 100%;
+    background-color: #000000;
+    line-height: 1.6;
+}
+
+
+#Main {
+    padding: 10px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #0c140d, #124e5a, #431181);
+    background-size: 500% 500%;
+    animation: change-gradient 5s ease-in-out infinite;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.13);
+    z-index: 997;
+    position: sticky;
+    top: 0;
+    left: 0%;
+}
+
+@keyframes change-gradient {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+#Main a {
+    text-decoration: none;
+    color: #fff;
+}
+
+#Main h3 {
+    margin: 10px 30px;
+    font-size: 30px;
+    font-weight: 600;
+}
+#navbar {
+    margin: 10px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+}
+
+#navbar li {
+    margin: 10px;
+    padding: 10px;
+    display: inline-block;
+    background: transparent;
+    list-style: none;
+    position: relative;
+}
+
+#navbar li a {
+    color: #fff;
+    line-height: 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    letter-spacing: .5px;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+#navbar li a:hover,
+#navbar li a.active {
+    background: black;
+    color: #fff; 
+    transition: background 0.3s ease;
+}
+
+.btn {
+  background-color: #333;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .4s linear;
+}
+
+.success {
+  border-radius: 10px;
+  border: 1px solid #333;
+  padding: 10px 15px;
+  color: #fff;
+  transition: color .4s linear;
+}
+
+.success:hover {
+  background-color: #f9f9ff;
+  color: #222;
+  border: 1px solid #f9f9ff;
+  transition: color .4s linear;
+}
+
+
+/* Landing Page  */
+
+#Predict {
+    background-image: url("../static/dark-pic-1.jpg");
+    height: 100vh; 
+    width: 100%; 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+  }
+  
+#Predict .border {
+  margin: 40px;
+  background-color: #4d3479;
+  border: 1px solid #333;
+  width: 50%;
+  border-radius: 20px;
+  box-shadow: 0pc 6px 30px #9c9c9c;
+  top: 10%;
+  left: 50%;
+  transform: translate(50%,10%);
+}
+
+#Predict .container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 60px;
+  margin: 40px;
+}
+
+.col1 .inputs {
+  padding: 30px;
+}
+
+.col2 .inputs {
+  padding: 30px;
+}
+
+.col1 h5 {
+  font-size: 24px;
+  text-align: center;
+  color: #fff;
+}
+
+.col2 h5 {
+  font-size: 24px;
+  text-align: center;
+  color: #fff;
+}
+
+.card input,
+select {
+  padding: 10px;
+  background: #905ab2;
+}
+
+.card input[name=departure] {
+  padding: 10px 45px;
+}
+
+.card input[name=arrival] {
+  padding: 10px 45px;
+}
+
+.card select[name=source] {
+  font-size: 15px;
+  padding: 10px 80px;
+}
+
+.card select[name=destination] {
+  font-size: 15px;
+  padding: 10px 78px;
+}
+
+.card select[name=stopage] {
+  font-size: 15px;
+  padding: 10px 85px;
+}
+
+.card select[name=airline] {
+  font-size: 15px;
+  padding: 10px 80px;
+}
+
+
+input[type=submit] {
+  margin: 10px;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background: #333;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+input[type=submit]:hover {
+  color: #fff;
+  background: #222;
+  cursor: pointer;
+}
+
+h4 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+}
+
+
+/*  Footer  */
+
+
+#Footer .last {
+  text-align: center;
+  color: #ccc; /* light grey color */
+}
+
+#Footer .last p {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+#Footer .developer-list {
+  list-style-type: none;
+  padding: 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+#Footer .developer-list li {
+  margin: 3px 0;
+}
+
+#Footer{
+  background-color: #222;
+}
+/*social -media*/
+
+
+.socials {
+  margin: 0;
+  padding: 10px;
+  list-style: none;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.socials li {
+  margin: 10px;
+  padding: 10px 15px;
+  border-radius: 50%;
+  /* border: 1px solid #fff; */
+}
+
+.socials a {
+  text-decoration: none;
+  color: #fff;
+  padding: 5px 0;
+}
+
+.socials a i {
+  font-size: 38px;
+  transition: color .3s linear;
+}
+
+.socials a:hover .fa {
+  color: #8490ff;
+  transition: color .1s linear;
+}
+
+
+/* Text */
+
+
+.last {
+  padding: 20px;
+  margin: 0;
+}
+
+.last p {
+  font-size: 18px;
+  letter-spacing: .5px;
+  text-align: center;
+  color: gray;
+}
+
+.last span {
+  color: #8490ff;
+}
+
+/* CURRENCY ENHANCEMENT */
+.currency-converter {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #639FAB;
+  margin-top: 20px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.currency-converter label {
+  color: #333;
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.currency-selector-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+#currency_selector {
+  width: 100%;
+  padding: 12px 20px;
+  appearance: none;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+#currency_selector:hover {
+  background-color: #f5f5f5;
+  border-color: #639FAB;
+}
+
+#currency_selector:focus {
+  outline: none;
+  border-color: #639FAB;
+  box-shadow: 0 0 0 3px rgba(99, 159, 171, 0.2);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #639FAB;
+}
+
+.price-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+}
+
+#price_display {
+  background-color: #fff;
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #639FAB;
+  text-align: center;
+}
+
+.currency-flag {
+  width: 24px;
+  height: 18px;
+  margin-right: 10px;
+  vertical-align: middle;
+  border-radius: 3px;
+}
