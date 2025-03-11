@@ -1,102 +1,93 @@
 @import url('https://fonts.cdnfonts.com/css/poppins');
 
-
-/*    Home page  */
-
+/* Base Styles */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
 }
 
 body {
-  width: 100%;
-  background-color: #ffffff;
-  line-height: 1.6;
+    width: 100%;
+    background-color: #000000;
+    line-height: 1.6;
 }
 
 
-/* Main Start */
-
 #Main {
-  padding: 10px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, #2A7F7F, #639FAB, #8161A7);
-  background-size: 500% 500%;
-  animation: change-gradient 5s ease-in-out infinite;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.13);
-  z-index: 997;
-  position: sticky;
-  top: 0;
-  left: 0%;
+    padding: 10px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #0c140d, #124e5a, #431181);
+    background-size: 500% 500%;
+    animation: change-gradient 5s ease-in-out infinite;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.13);
+    z-index: 997;
+    position: sticky;
+    top: 0;
+    left: 0%;
 }
 
 @keyframes change-gradient {
-  0% {
-    background-position: 0 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0 50%;
-  }
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
 }
 
-
-/* header */
-
-
 #Main a {
-  text-decoration: none;
-  color: #fff;
+    text-decoration: none;
+    color: #fff;
 }
 
 #Main h3 {
-  margin: 10px 30px;
-  font-size: 30px;
-  font-weight: 600;
+    margin: 10px 30px;
+    font-size: 30px;
+    font-weight: 600;
 }
 #navbar {
-  margin: 10px;
-  display: flex;
-  align-items: end;
-  justify-content: center;
+    margin: 10px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
 }
 
 #navbar li {
-  margin: 10px;
-  padding: 10px;
-  display: inline-block;
-  background: transparent;
-  list-style: none;
-  position: relative;
+    margin: 10px;
+    padding: 10px;
+    display: inline-block;
+    background: transparent;
+    list-style: none;
+    position: relative;
 }
 
 #navbar li a {
-  color: #fff;
-  line-height: 20px;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 600;
-  transition: 0.3s ease;
-  letter-spacing: .5px;
-  cursor: pointer;
-  padding: 10px 15px;
-  border-radius: 5px;
+    color: #fff;
+    line-height: 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    letter-spacing: .5px;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
 }
 
 #navbar li a:hover,
 #navbar li a.active {
-  background: black;
-  color: #fff; 
-  transition: background 0.3s ease;
+    background: black;
+    color: #fff; 
+    transition: background 0.3s ease;
 }
+
 .btn {
   background-color: #333;
   font-size: 15px;
@@ -123,18 +114,18 @@ body {
 
 /* Landing Page  */
 
-
 #Predict {
-  background-image: url("../static/flight_bg.jpg");
-  height: 120vh;
-  width: auto;
-  background-size: cover;
-  background-position: top 10% right 45%;
-}
-
+    background-image: url("../static/dark-pic-1.jpg");
+    height: 100vh; 
+    width: 100%; 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+  }
+  
 #Predict .border {
   margin: 40px;
-  background-color: #fff;
+  background-color: #4d3479;
   border: 1px solid #333;
   width: 50%;
   border-radius: 20px;
@@ -163,16 +154,19 @@ body {
 .col1 h5 {
   font-size: 24px;
   text-align: center;
+  color: #fff;
 }
 
 .col2 h5 {
   font-size: 24px;
   text-align: center;
+  color: #fff;
 }
 
 .card input,
 select {
   padding: 10px;
+  background: #905ab2;
 }
 
 .card input[name=departure] {
@@ -226,6 +220,7 @@ h4 {
   margin-bottom: 30px;
   font-size: 28px;
   font-weight: 600;
+  color: #fff;
 }
 
 

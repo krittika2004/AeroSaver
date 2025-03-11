@@ -18,10 +18,35 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="../static/predict.css" />
+  <!-- Default light mode -->
+  <link rel="stylesheet" id="theme-style" href="{{ url_for('static', filename='predict.css') }}">
 
 </head>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const modeToggle = document.getElementById("mode-toggle");
+      const themeStyle = document.getElementById("theme-style");
+  
+      // Check local storage for saved mode
+      if (localStorage.getItem("theme") === "dark") {
+          themeStyle.href = "{{ url_for('static', filename='predict-dark.css') }}";
+          modeToggle.textContent = "☀️ Light Mode";
+      }
+  
+      modeToggle.addEventListener("click", function () {
+          if (themeStyle.href.includes("predict.css")) {
+              themeStyle.href = "{{ url_for('static', filename='predict-dark.css') }}";
+              localStorage.setItem("theme", "dark");
+              modeToggle.textContent = "☀️ Light Mode";
+          } else {
+              themeStyle.href = "{{ url_for('static', filename='predict.css') }}";
+              localStorage.setItem("theme", "light");
+              modeToggle.textContent = "🌙 Dark Mode";
+          }
+      });
+  });
+</script>
 
 <body>
 
@@ -34,10 +59,13 @@
       <ul id="navbar">
         <li><a href="{{ url_for( 'index' ) }}">HOME</a></li>
         <li><a class="active" href="{{ url_for( 'predict' ) }}">PREDICTION</a></li>
-        <!-- <li><a href="#">OVERVIEW</a></li> -->
         <li id="google_translate_element_container">
           <div id="google_translate_element"></div>
-        </li>        
+        </li> 
+        <!-- <li><a href="#">OVERVIEW</a></li> -->
+        <li>
+          <button id="mode-toggle" class="mode-btn">🌙 Dark Mode</button>
+        </li>       
       </ul>
     </div>
   </section>

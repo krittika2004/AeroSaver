@@ -16,14 +16,37 @@
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="../static/style.css" />
-
+    <!-- Default light mode -->
+    <link rel="stylesheet" id="theme-style" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modeToggle = document.getElementById("mode-toggle");
+        const themeStyle = document.getElementById("theme-style");
+    
+        // Check local storage for saved mode
+        if (localStorage.getItem("theme") === "dark") {
+            themeStyle.href = "{{ url_for('static', filename='darkmode.css') }}";
+            modeToggle.textContent = "☀️ Light Mode";
+        }
+    
+        modeToggle.addEventListener("click", function () {
+            if (themeStyle.href.includes("style.css")) {
+                themeStyle.href = "{{ url_for('static', filename='darkmode.css') }}";
+                localStorage.setItem("theme", "dark");
+                modeToggle.textContent = "☀️ Light Mode";
+            } else {
+                themeStyle.href = "{{ url_for('static', filename='style.css') }}";
+                localStorage.setItem("theme", "light");
+                modeToggle.textContent = "🌙 Dark Mode";
+            }
+        });
+    });
+</script>
+    
 <body>
-
 
     <section id="Main">
         <a href="{{ url_for( 'index' ) }}">
@@ -33,12 +56,13 @@
             <ul id="navbar">
                 <li><a class="active" href="{{ url_for( 'index' ) }}">HOME</a></li>
                 <li><a href="{{ url_for( 'predict' ) }}">PREDICTION</a></li>
-                <!-- <li><a href="#">OVERVIEW</a></li> -->
-                <!-- <li><a href="#"><button class="btn success">CODE</button></a></li> -->
                 <li id="google_translate_element_container">
                     <div id="google_translate_element"></div>
                 </li>
-            </ul>
+                <li>
+                    <button id="mode-toggle" class="mode-btn">🌙 Dark Mode</button>
+                </li>
+            </ul>            
         </div>
     </section>
 
@@ -147,6 +171,6 @@
         }
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
+        
 </body>
 </html>
