@@ -132,7 +132,7 @@ body {
   box-shadow: 0pc 6px 30px #9c9c9c;
   top: 10%;
   left: 50%;
-  transform: translate(50%,10%);
+  transform: translate(50%,-5%);
 }
 
 #Predict .container{
@@ -250,6 +250,16 @@ h4 {
 
 #Footer{
   background-color: #222;
+  footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: black;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
 }
 /*social -media*/
 
