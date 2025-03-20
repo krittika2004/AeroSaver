@@ -73,22 +73,12 @@ We welcome contributions! Follow these steps to start contributing:
 
 ---
 
-## Contact 📞
-For any queries or discussions, feel free to reach out via:
-- **(Name) - Contact**
-- **(Name) - Contact**
-
-Google Form Link (if any): [Provide Link Here]
-
----
-
 ## Team Members 👥
 We would like to express our gratitude to all the team members who contributed their time and effort to make this project a success:
 
-- **Name1** - Domain ([GitHub](#))
-- **Name2** - Domain ([GitHub](#))
-- **Name3** - Domain ([GitHub](#))
-- **Name4** - Domain ([GitHub](#))
+- **Raghav** 
+- **Kritika**
+
 
 ---
 
