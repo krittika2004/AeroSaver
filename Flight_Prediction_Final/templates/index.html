@@ -18,20 +18,21 @@
 
     <!-- Default light mode -->
     <link rel="stylesheet" id="theme-style" href="{{ url_for('static', filename='style.css') }}">
-
+    
+    
 </head>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const modeToggle = document.getElementById("mode-toggle");
         const themeStyle = document.getElementById("theme-style");
-    
+
         // Check local storage for saved mode
         if (localStorage.getItem("theme") === "dark") {
             themeStyle.href = "{{ url_for('static', filename='darkmode.css') }}";
             modeToggle.textContent = "☀️ Light Mode";
         }
-    
+
         modeToggle.addEventListener("click", function () {
             if (themeStyle.href.includes("style.css")) {
                 themeStyle.href = "{{ url_for('static', filename='darkmode.css') }}";
@@ -45,7 +46,7 @@
         });
     });
 </script>
-    
+
 <body>
 
     <section id="Main">
@@ -62,7 +63,7 @@
                 <li>
                     <button id="mode-toggle" class="mode-btn">🌙 Dark Mode</button>
                 </li>
-            </ul>            
+            </ul>
         </div>
     </section>
 
@@ -76,7 +77,9 @@
             <p>The flight price prediction project is aimed at helping travelers plan their trips more effectively by
                 providing insights into the potential price trends of flight tickets. This model predicts the price of
                 the flight based on some parameters like total stops, journey Day, journey month, Air India, Indigo,
-                source, destination, etc. The project aims to create a predictive model that can forecast flight prices with a high degree of accuracy. The flight price prediction project can provide valuable insights for travelers, travel agencies, and airlines to optimize their travel planning, pricing strategies.</p>
+                source, destination, etc. The project aims to create a predictive model that can forecast flight prices
+                with a high degree of accuracy. The flight price prediction project can provide valuable insights for
+                travelers, travel agencies, and airlines to optimize their travel planning, pricing strategies.</p>
         </div>
     </div>
 
@@ -112,7 +115,7 @@
                 <h1>Regression Model R2 Scores</h1>
                 <table>
                     <tr>
-                        <th >r2_Score</th>
+                        <th>r2_Score</th>
                         <th>Score</th>
                     </tr>
                     <!-- <tr>
@@ -139,10 +142,10 @@
     <footer id="Footer">
         <div class="footer">
             <!-- <h3> Flight Price Prediction </h3> -->
-    
+
             <ul class="socials">
                 <li><a target="_blank" href="https://github.com/krittika2004/Flight-Price-Prediction-Project">
-                    <i class="fa fa-github"></i></a>
+                        <i class="fa fa-github"></i></a>
                 </li>
                 <!-- Uncomment if needed
                 <li><a target="_blank" href="https://www.linkedin.com/in/kunaldhavale/">
@@ -151,7 +154,7 @@
                 -->
             </ul>
         </div>
-    
+
         <div class="last">
             <p>Developed by:</p>
             <ul class="developer-list">
@@ -164,13 +167,17 @@
     </footer>
     <script type="text/javascript">
         function googleTranslateElementInit() {
-          new google.translate.TranslateElement({
-            pageLanguage: 'en', // Your site's original language
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-          }, 'google_translate_element');
+            new google.translate.TranslateElement({
+                pageLanguage: 'en', // Your site's original language
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
         }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-        
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+        <script src="https://files.bpcontent.cloud/2025/04/02/13/20250402134455-B7VFFAL2.js"></script>
+            
 </body>
+
 </html>
