@@ -3,10 +3,11 @@ import pickle
 import pandas as pd
 import os
 import requests
-
+from dotenv import load_dotenv
 API_KEY = "c464ca384d09a925ab5666aa"
 CURRENCY_API_URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/INR"
-
+load_dotenv()
+api_key = os.getenv("API_KEY")
 app = Flask(__name__)
 
 # Load model with error handling
@@ -37,6 +38,11 @@ def get_currency_rates():
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/weather")
+def weather():
+    return render_template("weather.html", api_key=api_key)
+
 
 # New route for getting exchange rates via AJAX
 @app.route("/get_exchange_rate")
