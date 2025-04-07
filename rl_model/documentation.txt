@@ -1,0 +1,166 @@
+Airline Pricing Optimization using TD3
+
+1. Overview
+This document details the methodology implemented in the rl_model.ipynb notebook for optimizing airline ticket pricing using Reinforcement Learning (RL). The primary goal is to train an RL agent to dynamically set prices for multiple flights over a simulation period to maximize cumulative profit.
+The chosen approach utilizes the Twin Delayed Deep Deterministic Policy Gradient (TD3) algorithm, an advanced Actor-Critic method suitable for environments with continuous action spaces (i.e., setting specific price values). The implementation leverages historical flight data, external factors (weather, aircraft specifications, holidays), and simulation heuristics to train the agent within an interactive Jupyter Notebook environment.
+
+2.  RL Framework
+The airline pricing used by a standard RL task:
+•	Goal: Maximize the total cumulative profit over a defined simulation period (e.g., 90 days leading up to departure).
+•	Agent: The TD3 algorithm, embodied by its Actor and Critic neural networks.
+•	Environment: A custom simulation (AirlinePricingEnv class) that models the market dynamics day by day for a set of unique flights (Route-Airline combinations).
+•	State: A numerical representation of the market and flight status at the beginning of each day. It includes information about time, historical context, current flight occupancy, recent pricing, external factors (weather, holidays), and aircraft characteristics.
+•	Action: A continuous value for each flight, representing the desired price level. The Actor network outputs actions scaled between [-1, 1], which the environment then maps to the actual price range (e.g., ₹1000 - ₹50000).
+•	Reward: The total profit generated across all managed flights on a given day. Reward = Daily Total Profit = Sum_over_flights [ (Price_i - CostPerSeat_i) * SeatsSold_i ].
+
+3. TD3 Algorithm
+Why TD3?
+•	Continuous Action Space: Setting a specific price is inherently a continuous problem, making algorithms designed for discrete actions (like DQN) theoretically unsuitable without discretization. TD3 directly handles continuous action outputs.
+•	Stability & Performance: TD3 builds upon DDPG by incorporating specific techniques (Twin Critics, Delayed Policy Updates, Target Policy Smoothing) that significantly improve training stability and reduce the overestimation bias common in simple Actor-Critic methods, often leading to better final policies.
+Core TD3 Components:
+1.	Actor Network: Learns the policy π(s). Takes the current state s as input and outputs the deterministic action a (scaled price vector) that maximizes the expected future reward according to the current policy. Uses a tanh activation to bound output to [-1, 1].
+2.	Critic Networks (Twin Q-Networks): Learns the action-value function Q(s, a). Two separate Critic networks (Q1, Q2) take the state s and action a as input and estimate the expected return. Using two critics and taking the minimum of their target values helps combat Q-value overestimation.
+3.	Target Networks: Slow-moving copies (Actor_target, Critic_target) of the main networks are used to stabilize learning by providing consistent targets during the Bellman update calculation. They are updated periodically using a soft update (τ).
+4.	Replay Buffer: Stores past experiences (s, a, r, s', done). Training occurs by sampling mini-batches from this buffer, enabling off-policy learning and breaking temporal correlations.
+5.	Delayed Policy Updates: The Actor network and Target networks are updated less frequently than the Critic networks (policy_freq parameter), allowing the Q-value estimates from the Critics to converge somewhat before guiding the policy update.
+6.	Target Policy Smoothing: Noise is added to the actions selected by the target Actor when calculating the Q-target value for the Critic update. This smooths the value function estimate, making the policy less prone to exploiting sharp peaks in the Q-function.
+
+4. Implementation Details
+
+4.1 Configuration (Config Dataclass)
+•	Centralizes all hyperparameters (learning rates, gamma, tau, TD3 specifics), environment parameters (capacity, simulation length), data paths, network architectures, and training control settings.
+•	Includes max_action_value (typically 1.0) corresponding to the Actor's tanh output range.
+•	The price_range is initially a placeholder and gets updated by the DataProcessor after fitting the price_scaler based on the observed min/max fares in the training data.
+
+4.2 Data Processing (DataProcessor Class)
+•	Input Data:
+o	cleaned_dataset.csv: Main source of historical flight details (Date, Airline, Route, Class, Stops, Fare, etc.). 'Fare' is treated as 'Price'.
+o	airplane_prices_dataset.csv: Provides aircraft specs (Model, Fuel Consumption, Maintenance Cost, Age).
+o	weather_data.csv: Provides detailed hourly weather records (Temp, Humidity, Condition).
+o	Holidays: Fetched dynamically for India using the holidays library.
+o	petroluem_prod_consumption.csv: Currently unused for pricing as it contains consumption, not price. Fuel price uses a constant fallback.
+•	Key Steps:
+1.	Loading: Loads specified CSV files.
+2.	Holiday Fetching: Retrieves national holidays for the relevant years.
+3.	Cleaning: Renames 'Fare' to 'Price', handles date conversion, drops essential NaNs.
+4.	Feature Creation: Creates 'Route' from 'Source'/'Destination'.
+5.	Merging: Joins holiday, aircraft spec (attempted merge on AircraftType <-> Model, often fails if AircraftType is missing), and aggregated daily weather data onto the main flight data. Adds fallback 'FuelPrice'.
+6.	Feature Engineering: Creates temporal features (DayOfWeek, Month, Season, IsWeekend, etc.) and Price MA/Lag features.
+7.	Missing Value Imputation: Fills NaNs using calculated medians (numeric) or 'Unknown' (categorical). Stores medians during fit. Handles cases where source data for merges/features was entirely NaN.
+8.	Encoding: Fits LabelEncoder (for nominal categories) and OrdinalEncoder (for ordered categories) during fit, applies them during transform. Handles unknown categories.
+9.	Scaling: Fits MinMaxScaler (for Price [0,1], DaysLeft [0,1]) and StandardScaler (for other numerical features) during fit, applies them during transform. Stores scaling parameters.
+10.	Price Range Update: Updates config.price_range based on the min/max 'Price' observed during price_scaler fitting.
+
+4.3 Environment (AirlinePricingEnv Class)
+•	State Representation:
+o	A flattened vector combining shared daily features and per-flight specific features.
+o	Shared: DayOfWeek, Month, WeekOfYear, DayOfYear, IsWeekend, IsHoliday, FuelPrice (constant).
+o	Per-Flight: Seats_Left_scaled (0-1), Current_Price_scaled (0-1 based on history), Days_Left_scaled (0-1), Duration_scaled (standardized), Price_MA7_scaled, Price_Lag1_scaled, various _encoded categorical features (Route, Airline, Class, Stops, etc.), Weather features (scaled/encoded), Aircraft features (scaled/encoded).
+o	See _determine_state_size for the exact list.
+•	Action Space: Continuous, n_flights-dimensional vector. The step method expects actions in the range [-1, 1].
+•	Action Scaling: The step method scales the input action a_i in [-1, 1] to the actual price p_i using: p_i = min_price + (a_i + 1.0) * 0.5 * (max_price - min_price), followed by clipping to [min_price, max_price].
+•	Demand Model (_calculate_demand): Heuristic-based. Calculates demand based on:
+o	A fixed base_potential.
+o	Price effect relative to historical_fare_stats (precomputed mean fare for route/airline).
+o	Days left effect (urgency multiplier).
+o	Simple multipliers for Class and Total_stops.
+o	Random noise (N(1.0, 0.25)).
+o	Limitation: This is a major simplification and does not use real historical demand data.
+•	Cost Model (_calculate_operational_cost): Heuristic-based. Calculates cost per seat based on:
+o	Flight Duration_in_hours.
+o	Fuel Consumption (L/hour) and Hourly Maintenance Cost ($) from merged aircraft specs (uses defaults if merge failed or spec missing).
+o	A constant FuelPrice fallback.
+o	A fixed other_fixed_costs placeholder.
+o	Final cost is capped relative to the minimum price range.
+o	Limitation: Relies on potentially missing spec data and placeholder costs.
+•	Reward Calculation: Reward = sum over flights [(Price - CostPerSeat) * SeatsSold] for the current day.
+•	Episode Termination: Ends after simulation_length_days or when current_date exceeds end_date.
+
+4.4 Agent (TD3Agent, Actor, Critic, ReplayBuffer)
+•	Actor Network: MLP with ReLU activations in hidden layers and a final Tanh layer outputting action_dim values in [-1, 1].
+•	Critic Network: MLP taking concatenated state and action as input. ReLU activations in hidden layers. Outputs a single Q-value estimate. Contains two identical Q-networks (q1_network, q2_network).
+•	Replay Buffer: Standard buffer storing (s, a, r, s', done) transitions as NumPy arrays. Samples batches and converts them to tensors on the correct device.
+•	select_action: Gets deterministic action from the Actor, adds Gaussian noise (exploration_noise) during training, and clips the result to [-max_action, max_action].
+•	train: Implements the TD3 update:
+1.	Samples batch.
+2.	Calculates target Q-value using target networks, target policy smoothing noise, and the minimum of the two target Critic outputs (Clipped Double-Q).
+3.	Calculates Critic loss (MSE against target Q for both Critics).
+4.	Updates Critic parameters via optimizer.
+5.	If it's a policy update step (total_it % policy_freq == 0):
+	Calculates Actor loss (negative mean Q1 value for actions proposed by the main Actor).
+	Updates Actor parameters via optimizer.
+	Performs soft updates (tau) on both Actor and Critic target networks.
+
+4.5 Training Process (train_model Function)
+•	Initialization: Resets environment, initializes tracking variables (rewards, losses, patience).
+•	Episode Loop: Iterates for n_episodes.
+•	Step Loop: Runs for simulation_length_days.
+o	Initial Exploration: Takes random actions for the first start_timesteps.
+o	Action Selection: Uses agent.select_action with exploration_noise after the initial phase.
+o	Environment Step: Executes action, receives (next_state, reward, done, info).
+o	Buffer Storage: Adds transition to agent.replay_buffer.
+o	Agent Training: Calls agent.train() if global_step_counter >= start_timesteps.
+o	Logging: Records step/episode metrics using PerformanceMetrics and optionally TensorBoard.
+o	Live Plot Update: Calls metrics.plot_training_progress to refresh the dashboard.
+•	Validation: Runs evaluate_model every validation_freq episodes using the greedy policy (no exploration noise).
+•	Model Saving: Saves the Actor and Critic network weights (.pth files) if the validation reward improves.
+•	Early Stopping: Stops training if validation reward doesn't improve for patience consecutive validation checks.
+
+4.6 Evaluation (evaluate_model Function)
+•	Sets agent.actor.eval() mode.
+•	Runs num_eval_episodes using the deterministic policy (exploration_noise = 0.0).
+•	Averages the total reward (profit) across evaluation episodes.
+•	Sets agent.actor.train() mode before returning.
+
+4.7 Notebook Interactivity
+•	Uses ipywidgets (Sliders, Buttons, Dropdowns) for setting hyperparameters (actor_lr, critic_lr, n_episodes) before training and for exploring data distributions and visualizing the learned policy.
+•	Uses %matplotlib notebook backend and repeated calls to metrics.plot_training_progress to create a live-updating dashboard during training.
+•	Uses HTML/CSS for visually structuring output (e.g., config box).
+•	Uses Mermaid syntax in Markdown for the conceptual diagram.
+
+5. Current Limitations & Assumptions
+1.	Heuristic Demand/Cost Models: The core simulation relies heavily on simplified, non-learned heuristics for demand (_calculate_demand) and cost (_calculate_operational_cost). The agent's performance is fundamentally limited by the realism of these heuristics.
+2.	Missing Data Impact:
+o	The lack of an AircraftType column in cleaned_dataset.csv prevents accurate merging of aircraft specifications, meaning features like Aircraft_Age, Fuel_Efficiency_scaled, etc., are likely based on imputed defaults and carry little informational value.
+o	Real fuel price data is missing; a constant fallback is used.
+3.	Fixed Capacity: Assumes a constant seats_capacity for all flights/aircraft types.
+4.	No Competitor Modeling: The environment does not simulate competitor actions or market share dynamics.
+5.	Simplified State: While many features are included, the state might miss crucial real-world factors (e.g., specific events, detailed booking curves, competitor prices).
+6.	Hyperparameter Sensitivity: TD3, like many RL algorithms, can be sensitive to hyperparameter choices (learning rates, noise levels, buffer size, etc.). The current values may not be optimal.
+7.	Simulation Fidelity: The overall environment is a simplified abstraction of the complex airline market.
+
+6. Future Scope & Potential Improvements
+1.	Data Enhancement:
+o	Obtain/Integrate real historical demand/booking data instead of relying solely on 'Fare'.
+o	Source reliable historical Jet Fuel (ATF) price data relevant to the timeframe/region.
+o	Ensure a reliable key (like AircraftType or IATA code) exists in historical data to accurately merge aircraft specifications.
+o	Incorporate competitor pricing data.
+o	Add data for special events, seasonality variations, etc.
+2.	Demand/Cost Modeling:
+o	Replace heuristics with data-driven predictive models (e.g., train separate supervised learning models for demand forecasting and cost estimation based on enhanced data).
+3.	RL Algorithm & Training:
+o	Experiment with SAC (Soft Actor-Critic), which often shows better sample efficiency and robustness.
+o	Implement Hyperparameter Optimization (e.g., using Optuna, Ray Tune) to find better settings for TD3/SAC.
+o	Explore advanced exploration strategies beyond simple Gaussian noise.
+o	Investigate Prioritized Experience Replay (PER).
+4.	State/Action Representation:
+o	Perform feature selection/engineering to identify the most impactful state components.
+o	Consider alternative state representations (e.g., using embeddings for categorical features).
+o	If scaling to many routes, explore Hierarchical RL or Parameter Sharing techniques.
+o	Compare performance against a discretized action space using algorithms like Rainbow DQN.
+5.	Environment Simulation:
+o	Add competitor agents or models.
+o	Incorporate more complex market dynamics (e.g., price elasticity varying by segment, cancellations, overbooking).
+o	Model different aircraft capacities accurately.
+6.	Deployment & Evaluation:
+o	Develop methods for offline policy evaluation (OPE) if historical booking data with varying prices becomes available.
+o	Plan for A/B testing if deploying in a real system.
+7.	Code & Notebook:
+o	Refactor DataProcessor into smaller functions if complexity grows.
+o	Add comprehensive unit/integration tests.
+o	Implement the placeholder "Profit Simulation Timeline" animation.
+o	Refine interactive visualizations.
+
+7. Conclusion
+The TD3 will provide a framework for tackling the continuous action space problem of airline pricing optimization using reinforcement learning. The interactive notebook structure facilitates experimentation and analysis. While current performance is heavily dependent on the realism of the heuristic demand and cost models and limited by available data (especially aircraft type mapping and fuel prices), the architecture serves as a strong foundation. Future work should focus on enhancing data quality, replacing heuristics with data-driven models.
+
