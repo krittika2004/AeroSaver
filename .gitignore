@@ -1,5 +1,2 @@
 node_modules/
 flight.pkl
-venv/
-venv310/
-.vscode/
